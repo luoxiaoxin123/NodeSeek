@@ -68,3 +68,13 @@ jobs:
           TG_USER_ID: ${{ secrets.TG_USER_ID }}
           TG_THREAD_ID: ${{ secrets.TG_THREAD_ID }}
         run: python nodeseek_sign.py
+
+  # 定时任务在仓库 60 天无活动后会被 GitHub 自动禁用。
+  # 每次运行时调用 API 重新启用本工作流，以重置 60 天计时（不产生任何提交）。
+  keepalive:
+    runs-on: ubuntu-latest
+    steps:
+      - name: 保持工作流活跃
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: gh api -X PUT "repos/${{ github.repository }}/actions/workflows/blank.yml/enable"
